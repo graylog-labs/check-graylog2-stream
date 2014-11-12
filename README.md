@@ -44,3 +44,79 @@ If you need to build the check yourself, you can do it like this:
 go get github.com/fractalcat/nagiosplugin
 go build -o bin/check-graylog2-stream src/check-graylog2-stream/check-graylog2-stream.go
 ```
+
+### Icinga 2 Integration
+
+Make sure to download and install the plugin into `PluginDir`.
+This constant is defined in the `constants.conf` file (default
+in `/etc/icinga2/constants.conf`). More details in the
+[Icinga 2 documentation](http://docs.icinga.org).
+
+#### New CheckCommand Definition
+
+Add that to `conf.d/commands.conf`  or a similar
+included file.
+
+```shell
+object CheckCommand "graylog2-stream" {
+  import "plugin-check-command"
+
+  command = [ PluginDir + "/check-graylog2-stream" ]
+
+  arguments = {
+    "-stream" = "$graylog2_stream_id$"
+    "-user" = "$graylog2_api_username$"
+    "-password" = "$graylog2_api_password$"
+    "-url" = "$graylog2_api_url$"
+  }
+
+  // default values
+  vars.graylog2_api_url = "http://localhost:12900"
+  vars.graylog2_api_username = "admin"
+  vars.graylog2_api_password = "yourpassword"
+}
+```
+
+#### Host and Service Definition
+
+Depending your monitoring configuration strategy, you can define
+it like the following example for Icinga2 2.2+:
+
+```shell
+object Host "graylog2-host" {
+  address = "127.0.0.1"
+  check_command = "hostalive"
+
+  /* `icinga2` is the stream name. Used in service apply for rule below */
+  vars.streams["icinga2"] = {
+    graylog2_stream_id = "54610d26e4b059482bbfab0f"
+  }
+}
+
+template Service "graylog2-service" {
+  check_interval = 30s
+  retry_interval = 30s
+  max_check_attempts = 3
+  enable_flapping = false
+  enable_notifications = true
+}
+
+const GraylogStreamApiUrl = "http://127.0.0.1:9000/streams/"
+
+apply Service "alert-" for (stream => config in host.vars.streams) {
+  import "graylog2-service"
+
+  check_command = "graylog2-stream"
+
+  vars += config
+
+  notes = "My " + stream + " graylog2 alert stream checker."
+  notes_url = GraylogStreamApiUrl + stream + "/alerts"
+
+  assign where host.vars.streams
+}
+```
+
+
+
+
