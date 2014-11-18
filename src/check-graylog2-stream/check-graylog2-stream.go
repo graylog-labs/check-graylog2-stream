@@ -7,19 +7,21 @@ import (
   "os"
   "io/ioutil"
   "net/http"
-	"github.com/fractalcat/nagiosplugin"
+  "net/url"
+  "strings"
+  "github.com/fractalcat/nagiosplugin"
 )
 
 var condition *string
 var stream    *string
-var url       *string
+var api_url   *string
 var user      *string
 var pass      *string
 
 func init() {
   condition = flag.String("condition", "<ID>", "Condition ID, set only to check a single alert (optional)")
   stream    = flag.String("stream",    "<ID>", "Stream ID (mandatory)")
-  url       = flag.String("url",       "http://localhost:12900", "URL to Graylog2 api (optional)")
+  api_url   = flag.String("url",       "http://localhost:12900", "URL to Graylog2 api (optional)")
   user      = flag.String("user",      "<username>", "API username (mandatory)")
   pass      = flag.String("password",  "<password>", "API password (mandatory)")
 }
@@ -32,13 +34,14 @@ func main() {
   defer check.Finish()
 
   var data map[string]interface{}
-  queryApi(*url + "/streams/" + *stream + "/alerts/check", *user, *pass, &data)
+  queryApi(parseUrl(*api_url) + "/streams/" + url.QueryEscape(*stream) + "/alerts/check", url.QueryEscape(*user), url.QueryEscape(*pass), &data)
 
   total   := data["total_triggered"].(float64)
   results := data["results"].([]interface{})
 
   var stream_title string
-  queryApi(*url + "/streams/" + *stream, *user, *pass, &data)
+
+  queryApi(parseUrl(*api_url) + "/streams/" + url.QueryEscape(*stream), url.QueryEscape(*user), url.QueryEscape(*pass), &data)
   stream_title = data["title"].(string)
 
   for i, result := range results {
@@ -65,9 +68,23 @@ func checkArguments() {
   }
 }
 
-func queryApi(url string, user string, pass string, data *map[string]interface{}) {
+func parseUrl(unparsed_url string) string {
+  parsed_url, err := url.Parse(unparsed_url)
+  if err != nil {
+    nagiosplugin.Exit(nagiosplugin.UNKNOWN, "Can not parse given URL")
+  }
+
+  if !strings.Contains(parsed_url.Host, ":") {
+    nagiosplugin.Exit(nagiosplugin.UNKNOWN, "Please give the API port number in the form http://hostname:port")
+  }
+
+  connection_string := parsed_url.Scheme + "://" + parsed_url.Host
+  return connection_string
+}
+
+func queryApi(api_url string, user string, pass string, data *map[string]interface{}) {
   client := &http.Client{}
-  req, err := http.NewRequest("GET", url, nil)
+  req, err := http.NewRequest("GET", api_url, nil)
   req.SetBasicAuth(user, pass)
   res, err := client.Do(req)
   if err != nil {
