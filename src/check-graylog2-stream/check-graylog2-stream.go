@@ -84,4 +84,8 @@ func queryApi(url string, user string, pass string, data *map[string]interface{}
   if err != nil {
     nagiosplugin.Exit(nagiosplugin.UNKNOWN, "Can not parse JSON from Graylog2 API")
   }
+
+  if res.StatusCode != 200 {
+    nagiosplugin.Exit(nagiosplugin.UNKNOWN, "Got wrong return code from Graylog2 API, please check all command line parameters")
+  }
 }
