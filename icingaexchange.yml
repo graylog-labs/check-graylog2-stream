@@ -2,6 +2,7 @@
 name: "check-graylog2-stream"
 description: "file:///README.md"
 url: "https://github.com/Graylog2/check-graylog2-stream"
+tags: Graylog2
 vendor: Graylog2
 type: Plugin
 target: Log
