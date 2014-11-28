@@ -1,0 +1,8 @@
+---
+name: "check-graylog2-stream"
+description: "file:///README.md"
+url: "https://github.com/Graylog2/check-graylog2-stream"
+vendor: Graylog2
+type: Plugin
+target: Log
+license: Apache 2.0
