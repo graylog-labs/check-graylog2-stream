@@ -16,7 +16,7 @@ usage:
   -condition="<ID>": Condition ID, set only to check a single alert (optional)
   -password="<password>": API password (mandatory)
   -stream="<ID>": Stream ID (mandatory)
-  -url="http://localhost:12900": URL to Graylog2 api (optional)
+  -url="http://localhost:12900": URL to Graylog2 API (optional)
   -user="<username>": API username (mandatory)
 ```
 
@@ -26,10 +26,16 @@ To check a stream on a remote server configure this check in your monitoring con
 check-graylog2-stream -stream=545b8c15e4b07ae85aee40d1 -user=admin -password=secret -url='http://172.16.0.1:12900'
 ```
 
-You can also check a single condition of a stream
+You can also check a single condition of a stream, through HTTP
 
 ```shell
 check-graylog2-stream -stream=545b8c15e4b07ae85aee40d1 -user=admin -password=secret -url='http://172.16.0.1:12900' -condition=eeae1109-7cba-4fa0-a35a-8aa7d162ed54
+```
+
+or HTTPS (see rest_listen_uri and rest_enable_tls in graylog-server configuration)
+
+```shell
+check-graylog2-stream -stream=545b8c15e4b07ae85aee40d1 -user=admin -password=secret -url='https://172.16.0.1:12900' -condition=eeae1109-7cba-4fa0-a35a-8aa7d162ed54
 ```
 
 To figure out which stream or condition IDs to use, query the Graylog2 API

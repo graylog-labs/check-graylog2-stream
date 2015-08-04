@@ -8,6 +8,7 @@ import (
   "io/ioutil"
   "net/http"
   "net/url"
+  "crypto/tls"
   "strings"
   "github.com/fractalcat/nagiosplugin"
 )
@@ -83,7 +84,10 @@ func parseUrl(unparsed_url string) string {
 }
 
 func queryApi(api_url string, user string, pass string, data *map[string]interface{}) {
-  client := &http.Client{}
+  tr := &http.Transport{
+    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+  }
+  client := &http.Client{Transport: tr}
   req, err := http.NewRequest("GET", api_url, nil)
   req.SetBasicAuth(user, pass)
   res, err := client.Do(req)
