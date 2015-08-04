@@ -85,7 +85,7 @@ func parseUrl(unparsed_url string) string {
 
 func queryApi(api_url string, user string, pass string, data *map[string]interface{}) {
   tr := &http.Transport{
-    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    TLSClientConfig: &tls.Config{InsecureSkipVerify: true}
   }
   client := &http.Client{Transport: tr}
   req, err := http.NewRequest("GET", api_url, nil)
