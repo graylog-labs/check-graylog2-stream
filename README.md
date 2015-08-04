@@ -32,7 +32,7 @@ You can also check a single condition of a stream
 check-graylog2-stream -stream=545b8c15e4b07ae85aee40d1 -user=admin -password=secret -url='http://172.16.0.1:12900' -condition=eeae1109-7cba-4fa0-a35a-8aa7d162ed54
 ```
 
-To figure out which stream or codition IDs to use, query the Graylog2 API
+To figure out which stream or condition IDs to use, query the Graylog2 API
 ```shell
 curl -i --user admin:secret -H 'Accept: application/json' 'http://172.16.0.1:12900/streams?pretty=true'
 ```
