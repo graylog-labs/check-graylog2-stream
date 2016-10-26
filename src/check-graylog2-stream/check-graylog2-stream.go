@@ -22,7 +22,7 @@ var pass      *string
 func init() {
   condition = flag.String("condition", "<ID>", "Condition ID, set only to check a single alert (optional)")
   stream    = flag.String("stream",    "<ID>", "Stream ID (mandatory)")
-  api_url   = flag.String("url",       "http://localhost:12900", "URL to Graylog2 api (optional)")
+  api_url   = flag.String("url",       "http://localhost:9000/api", "URL to Graylog2 api (optional)")
   user      = flag.String("user",      "<username>", "API username (mandatory)")
   pass      = flag.String("password",  "<password>", "API password (mandatory)")
 }
