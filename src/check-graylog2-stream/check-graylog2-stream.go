@@ -79,7 +79,7 @@ func parseUrl(unparsed_url string) string {
     nagiosplugin.Exit(nagiosplugin.UNKNOWN, "Please give the API port number in the form http://hostname:port")
   }
 
-  connection_string := parsed_url.Scheme + "://" + parsed_url.Host
+  connection_string := parsed_url.Scheme + "://" + parsed_url.Host + parsed_url.Path
   return connection_string
 }
 
